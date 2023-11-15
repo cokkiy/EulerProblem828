@@ -14,13 +14,13 @@ runtimes:
     - python@3.10.8
 lint:
   enabled:
-    - clippy@1.65.0
     - git-diff-check
     - markdownlint@0.37.0
     - prettier@3.1.0
     - rustfmt@1.65.0
     - taplo@0.8.1
     - trufflehog@3.62.1
+    - clippy
 actions:
   disabled:
     - trunk-announce

@@ -1,68 +1,66 @@
-use std::iter;
-
 fn main() {
     println!("Hello, world!");
+    fork_calculation(&vec![1, 2, 3, 4]);
 }
 
+fn fork_calculation(numbers: &Vec<i32>) {
+    for i in 0..numbers.len() - 1 {
+        let left = numbers[i];
+        for right in &numbers[(i + 1)..] {
+            let results = TwoNumberResults::new(left, *right);
+            if let Some(sum) = results.sum {
+                println!("{} + {} = {}", left, right, sum);
+            }
+            if let Some(difference) = results.difference {
+                println!("{} - {} = {}", left, right, difference);
+            }
+            if let Some(product) = results.product {
+                println!("{} * {} = {}", left, right, product);
+            }
+            if let Some(quotient) = results.quotient {
+                println!("{} / {} = {}", left, right, quotient);
+            }
+            if let Some(reverse_difference) = results.reverse_difference {
+                println!("{} - {} = {}", right, left, reverse_difference);
+            }
+            if let Some(reverse_quotient) = results.reverse_quotient {
+                println!("{} / {} = {}", right, left, reverse_quotient);
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
 struct TwoNumberResults {
-    sum: Option<u32>,
-    difference: Option<u32>,
-    product: Option<u32>,
-    quotient: Option<u32>,
-    reverse_difference: Option<u32>,
-    reverse_quotient: Option<u32>,
+    left: i32,
+    right: i32,
+    sum: Option<i32>,
+    difference: Option<i32>,
+    product: Option<i32>,
+    quotient: Option<i32>,
+    reverse_difference: Option<i32>,
+    reverse_quotient: Option<i32>,
 }
 
 impl TwoNumberResults {
-    fn new() -> TwoNumberResults {
+    fn new(left: i32, right: i32) -> TwoNumberResults {
         TwoNumberResults {
-            sum: None,
-            difference: None,
-            product: None,
-            quotient: None,
-            reverse_difference: None,
-            reverse_quotient: None,
+            left,
+            right,
+            sum: Some(left + right),
+            difference: Some(left - right),
+            product: Some(left * right),
+            quotient: if left % right == 0 {
+                Some(left / right)
+            } else {
+                None
+            },
+            reverse_difference: Some(right - left),
+            reverse_quotient: if right % left == 0 {
+                Some(right / left)
+            } else {
+                None
+            },
         }
-    }
-
-    fn calculate(&mut self, left: u32, right: u32) {
-        self.sum = Some(left + right);
-        self.difference = Some(left - right);
-        self.product = Some(left * right);
-        self.quotient = if left % right == 0 {
-            Some(left / right)
-        } else {
-            None
-        };
-        self.reverse_difference = Some(right - left);
-        self.reverse_quotient = if right % left == 0 {
-            Some(right / left)
-        } else {
-            None
-        };
-    }
-}
-
-struct Numbers {
-    numbers: Vec<u32>,
-}
-
-impl Numbers {
-    fn new(numbers: Vec<u32>) -> Numbers {
-        Numbers { numbers }
-    }
-}
-
-impl iter::Iterator for Numbers {
-    type Item = (u32, u32);
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut result = None;
-        if self.numbers.len() > 1 {
-            let left = self.numbers.remove(0);
-            for right in &self.numbers {
-                result = Some((left, *right));
-            }
-        }
-        result
     }
 }

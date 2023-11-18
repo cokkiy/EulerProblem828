@@ -1,14 +1,21 @@
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
 fn main() {
     println!("Start...");
     let mut results_steps: Vec<Vec<ArithmeticOperation>> = Vec::new();
     let steps: Vec<ArithmeticOperation> = Vec::with_capacity(5);
-    fork_calculation(211, &vec![2, 3, 4, 6, 7, 25], &steps, &mut results_steps);
+    fork_calculation(58, &vec![2, 7, 3, 4, 5], &steps, &mut results_steps);
     for (index, result) in results_steps.iter().enumerate() {
-        println!("Result {}:", index + 1);
+        let steps = ArithmeticSteps::from(result);
+        println!(
+            "{}): {} = 58  Score: {}",
+            index + 1,
+            steps,
+            steps.get_score()
+        );
+
         for step in result {
-            println!("{}", step);
+            println!("     {}", step);
         }
     }
 }
@@ -36,6 +43,138 @@ impl Display for ArithmeticOperation {
             Self::Division(left, right) => {
                 write!(f, "{} / {} = {}", left, right, left / right)
             }
+        }
+    }
+}
+
+struct ArithmeticSteps {
+    steps: Vec<ArithmeticOperation>,
+}
+
+impl ArithmeticSteps {
+    fn from(steps: &Vec<ArithmeticOperation>) -> ArithmeticSteps {
+        ArithmeticSteps {
+            steps: steps.to_vec(),
+        }
+    }
+
+    fn get_used_numbers(&self) -> Vec<i32> {
+        let mut used_numbers: Vec<i32> = Vec::new();
+        let mut mid_results: Vec<i32> = Vec::with_capacity(5);
+
+        fn find_used_numbers(
+            mid_results: &mut Vec<i32>,
+            used_numbers: &mut Vec<i32>,
+            left: &i32,
+            right: &i32,
+        ) {
+            if let Some(pos) = mid_results.iter().position(|&x| x == *left) {
+                mid_results.remove(pos);
+            } else {
+                used_numbers.push(*left);
+            }
+
+            if let Some(pos) = mid_results.iter().position(|&x| x == *right) {
+                mid_results.remove(pos);
+            } else {
+                used_numbers.push(*right);
+            }
+        }
+
+        for step in &self.steps {
+            match step {
+                ArithmeticOperation::Addition(left, right) => {
+                    find_used_numbers(&mut mid_results, &mut used_numbers, left, right);
+                    mid_results.push(*left + *right);
+                }
+                ArithmeticOperation::Subtraction(left, right) => {
+                    find_used_numbers(&mut mid_results, &mut used_numbers, left, right);
+                    mid_results.push(*left - *right);
+                }
+                ArithmeticOperation::Multiplication(left, right) => {
+                    find_used_numbers(&mut mid_results, &mut used_numbers, left, right);
+                    mid_results.push(*left * *right);
+                }
+                ArithmeticOperation::Division(left, right) => {
+                    find_used_numbers(&mut mid_results, &mut used_numbers, left, right);
+                    mid_results.push(*left / *right);
+                }
+            }
+        }
+        used_numbers
+    }
+
+    fn get_score(&self) -> i32 {
+        let used_numbers = self.get_used_numbers();
+        used_numbers.iter().sum()
+    }
+}
+
+impl Display for ArithmeticSteps {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        fn replace_by_mid_value(
+            mid_results: &mut HashMap<i32, String>,
+            left: &i32,
+            right: &i32,
+            mid_value: i32,
+            op: &str,
+        ) {
+            if mid_results.contains_key(left) && mid_results.contains_key(right) {
+                let ls = mid_results.remove_entry(left).unwrap().1;
+                let rs = mid_results.remove_entry(right).unwrap().1;
+                if op == "*" || op == "/" || op == "-" {
+                    mid_results.insert(mid_value, format!("({}) {} ({})", ls, op, rs));
+                } else {
+                    mid_results.insert(mid_value, format!("{} {} {}", ls, op, rs));
+                }
+            } else if mid_results.contains_key(left) {
+                let ls = mid_results.remove_entry(left).unwrap().1;
+                if op == "*" || op == "/" {
+                    mid_results.insert(mid_value, format!("({}) {} {}", ls, op, right));
+                } else {
+                    mid_results.insert(mid_value, format!("{} {} {}", ls, op, right));
+                }
+            } else if mid_results.contains_key(right) {
+                let rs = mid_results.remove_entry(right).unwrap().1;
+                if op == "*" || op == "/" || op == "-" {
+                    mid_results.insert(mid_value, format!("{} {} ({})", left, op, rs));
+                } else {
+                    mid_results.insert(mid_value, format!("{} {} {}", left, op, rs));
+                }
+            } else {
+                mid_results.insert(mid_value, format!("{} {} {}", left, op, right));
+            }
+        }
+
+        let mut mid_results: HashMap<i32, String> = HashMap::new();
+        for step in &self.steps {
+            match step {
+                ArithmeticOperation::Addition(left, right) => {
+                    let mid_value = *left + *right;
+                    replace_by_mid_value(&mut mid_results, left, right, mid_value, "+");
+                }
+                ArithmeticOperation::Subtraction(left, right) => {
+                    let mid_value = *left - *right;
+                    replace_by_mid_value(&mut mid_results, left, right, mid_value, "-");
+                }
+                ArithmeticOperation::Multiplication(left, right) => {
+                    let mid_value = *left * *right;
+                    replace_by_mid_value(&mut mid_results, left, right, mid_value, "*");
+                }
+                ArithmeticOperation::Division(left, right) => {
+                    let mid_value = *left / *right;
+                    replace_by_mid_value(&mut mid_results, left, right, mid_value, "/");
+                }
+            }
+        }
+        if mid_results.is_empty() {
+            write!(f, "No steps")
+        } else {
+            let mut steps = String::new();
+            for (_, value) in mid_results {
+                steps.push_str(&value);
+            }
+            write!(f, "{}", steps)
         }
     }
 }

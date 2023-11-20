@@ -12,6 +12,15 @@ pub(crate) enum Operand {
     Operation(Box<ArithmeticOperation>),
 }
 
+impl Operand {
+    pub fn to_expression(&self) -> String {
+        match self {
+            Operand::Number(number) => number.to_string(),
+            Operand::Operation(operation) => operation.to_expression(),
+        }
+    }
+}
+
 impl Add for &Operand {
     type Output = i32;
 

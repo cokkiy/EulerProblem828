@@ -9,6 +9,146 @@ mod tests {
     };
 
     #[test]
+    fn operation_add_display() {
+        let operation = ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        );
+        assert_eq!(format!("{}", operation), "1 + 2 = 3");
+    }
+
+    #[test]
+    fn operation_sub_display() {
+        let operation = ArithmeticOperation::Subtraction(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            -1,
+        );
+        assert_eq!(format!("{}", operation), "1 - 2 = -1");
+    }
+
+    #[test]
+    fn operation_mul_display() {
+        let operation = ArithmeticOperation::Multiplication(
+            Rc::new(Operand::Number(3)),
+            Rc::new(Operand::Number(2)),
+            6,
+        );
+        assert_eq!(format!("{}", operation), "3 * 2 = 6");
+    }
+
+    #[test]
+    fn operation_div_display() {
+        let operation = ArithmeticOperation::Division(
+            Rc::new(Operand::Number(6)),
+            Rc::new(Operand::Number(2)),
+            3,
+        );
+        assert_eq!(format!("{}", operation), "6 / 2 = 3");
+    }
+
+    #[test]
+    fn operand_number_display() {
+        let operand = Operand::Number(1);
+        assert_eq!(format!("{}", operand), "1");
+    }
+
+    #[test]
+    fn operand_operation_display() {
+        let operand = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        )));
+        assert_eq!(format!("{}", operand), "1 + 2 = 3");
+    }
+
+    #[test]
+    fn operand_number_to_expression() {
+        let operand = Operand::Number(10);
+        assert_eq!(operand.to_expression(), "10");
+    }
+
+    #[test]
+    fn operand_operation_to_expression() {
+        let operand = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(4)),
+            5,
+        )));
+        assert_eq!(operand.to_expression(), "1 + 4");
+    }
+
+    #[test]
+    fn operand_inner_left_operation_to_expression() {
+        let left = Rc::new(Operand::Operation(Box::new(
+            ArithmeticOperation::Multiplication(
+                Rc::new(Operand::Number(2)),
+                Rc::new(Operand::Number(3)),
+                6,
+            ),
+        )));
+        let operand = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            left,
+            Rc::new(Operand::Number(4)),
+            10,
+        )));
+        assert_eq!(operand.to_expression(), "2 * 3 + 4");
+    }
+
+    #[test]
+    fn operand_inner_right_operation_to_expression() {
+        let right = Rc::new(Operand::Operation(Box::new(ArithmeticOperation::Division(
+            Rc::new(Operand::Number(6)),
+            Rc::new(Operand::Number(3)),
+            2,
+        ))));
+        let operand = Operand::Operation(Box::new(ArithmeticOperation::Subtraction(
+            Rc::new(Operand::Number(4)),
+            right,
+            10,
+        )));
+        assert_eq!(operand.to_expression(), "4 - 6 / 3");
+    }
+
+    #[test]
+    fn operand_inner_2_operation_to_expression() {
+        let left = Rc::new(Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(6)),
+            Rc::new(Operand::Number(3)),
+            9,
+        ))));
+
+        let right = Rc::new(Operand::Operation(Box::new(
+            ArithmeticOperation::Multiplication(
+                Rc::new(Operand::Number(6)),
+                Rc::new(Operand::Number(3)),
+                18,
+            ),
+        )));
+        let operand = Operand::Operation(Box::new(ArithmeticOperation::Multiplication(
+            left, right, 162,
+        )));
+        assert_eq!(operand.to_expression(), "(6 + 3) * 6 * 3");
+        assert_eq!(format!("{}", operand), "(6 + 3) * 6 * 3 = 162");
+    }
+
+    #[test]
+    fn operand_add_number_display() {
+        let operand = Rc::new(Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        ))));
+
+        let num = Rc::new(Operand::Number(4));
+
+        let result = ArithmeticOperation::Addition(operand, num, 7);
+        assert_eq!(format!("{}", result), "1 + 2 + 4 = 7");
+    }
+
+    #[test]
     fn two_number_results() {
         let left = Rc::new(Operand::Number(1));
         let right = Rc::new(Operand::Number(2));
@@ -42,6 +182,44 @@ mod tests {
         assert_eq!(results.product, Some(24));
         assert_eq!(results.quotient, None);
         assert_eq!(results.reverse_difference, Some(5));
+        assert_eq!(results.reverse_quotient, None);
+    }
+
+    #[test]
+    fn num_operation_results() {
+        let left = Rc::new(Operand::Number(16));
+
+        let right = Rc::new(Operand::Operation(Box::new(
+            ArithmeticOperation::Multiplication(
+                Rc::new(Operand::Number(2)),
+                Rc::new(Operand::Number(4)),
+                8,
+            ),
+        )));
+        let results = TwoNumberResults::new(left.clone(), right.clone());
+        assert_eq!(results.sum, Some(24));
+        assert_eq!(results.difference, Some(8));
+        assert_eq!(results.product, Some(128));
+        assert_eq!(results.quotient, Some(2));
+        assert_eq!(results.reverse_difference, Some(-8));
+        assert_eq!(results.reverse_quotient, None);
+    }
+
+    #[test]
+    fn operation_num_results() {
+        let left = Rc::new(Operand::Operation(Box::new(ArithmeticOperation::Division(
+            Rc::new(Operand::Number(8)),
+            Rc::new(Operand::Number(2)),
+            4,
+        ))));
+
+        let right = Rc::new(Operand::Number(3));
+        let results = TwoNumberResults::new(left.clone(), right.clone());
+        assert_eq!(results.sum, Some(7));
+        assert_eq!(results.difference, Some(1));
+        assert_eq!(results.product, Some(12));
+        assert_eq!(results.quotient, None);
+        assert_eq!(results.reverse_difference, Some(-1));
         assert_eq!(results.reverse_quotient, None);
     }
 

@@ -9,6 +9,58 @@ mod tests {
     };
 
     #[test]
+    fn operand_add() {
+        let left = Operand::Number(2);
+        let right = Operand::Number(4);
+        let result = &left + &right;
+        assert_eq!(format!("{}", result), "2 + 4 = 6");
+    }
+
+    #[test]
+    fn operand_operation_add() {
+        let left = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        )));
+        let right = Operand::Number(2);
+        let result = &left + &right;
+        assert_eq!(format!("{}", result), "1 + 2 + 2 = 5");
+    }
+
+    #[test]
+    fn operand_sub() {
+        let left = Operand::Number(2);
+        let right = Operand::Number(4);
+        let result = &left - &right;
+        assert_eq!(format!("{}", result), "2 - 4 = -2");
+    }
+
+    #[test]
+    fn operand_operation_sub() {
+        let left = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        )));
+        let right = Operand::Number(2);
+        let result = &left - &right;
+        assert_eq!(format!("{}", result), "1 + 2 - 2 = 1");
+    }
+
+    #[test]
+    fn operand_right_operation_sub() {
+        let left = Operand::Number(2);
+        let right = Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            3,
+        )));
+        let result = &left - &right;
+        assert_eq!(format!("{}", result), "2 - (1 + 2) = -1");
+    }
+
+    #[test]
     fn operation_add_display() {
         let operation = ArithmeticOperation::Addition(
             Rc::new(Operand::Number(1)),
@@ -153,11 +205,11 @@ mod tests {
         let left = Rc::new(Operand::Number(1));
         let right = Rc::new(Operand::Number(2));
         let results = TwoNumberResults::new(left.clone(), right.clone());
-        assert_eq!(results.sum, Some(3));
-        assert_eq!(results.difference, Some(-1));
+        assert_eq!(results.sum, Some(Operand::Number(3)));
+        assert_eq!(results.difference.unwrap().get_result(), -1);
         assert_eq!(results.product, Some(2));
         assert_eq!(results.quotient, None);
-        assert_eq!(results.reverse_difference, Some(1));
+        assert_eq!(results.reverse_difference.unwrap().get_result(), 1);
         assert_eq!(results.reverse_quotient, Some(2));
     }
 
@@ -177,11 +229,11 @@ mod tests {
             ),
         )));
         let results = TwoNumberResults::new(left.clone(), right.clone());
-        assert_eq!(results.sum, Some(11));
-        assert_eq!(results.difference, Some(-5));
+        assert_eq!(results.sum, Some(Operand::Number(11)));
+        assert_eq!(results.difference.unwrap().get_result(), -5);
         assert_eq!(results.product, Some(24));
         assert_eq!(results.quotient, None);
-        assert_eq!(results.reverse_difference, Some(5));
+        assert_eq!(results.reverse_difference.unwrap().get_result(), 5);
         assert_eq!(results.reverse_quotient, None);
     }
 
@@ -197,11 +249,11 @@ mod tests {
             ),
         )));
         let results = TwoNumberResults::new(left.clone(), right.clone());
-        assert_eq!(results.sum, Some(24));
-        assert_eq!(results.difference, Some(8));
+        assert_eq!(results.sum, Some(Operand::Number(24)));
+        assert_eq!(results.difference.unwrap().get_result(), 8);
         assert_eq!(results.product, Some(128));
         assert_eq!(results.quotient, Some(2));
-        assert_eq!(results.reverse_difference, Some(-8));
+        assert_eq!(results.reverse_difference.unwrap().get_result(), -8);
         assert_eq!(results.reverse_quotient, None);
     }
 
@@ -215,11 +267,11 @@ mod tests {
 
         let right = Rc::new(Operand::Number(3));
         let results = TwoNumberResults::new(left.clone(), right.clone());
-        assert_eq!(results.sum, Some(7));
-        assert_eq!(results.difference, Some(1));
+        assert_eq!(results.sum.unwrap().get_result(), 7);
+        assert_eq!(results.difference.unwrap().get_result(), 1);
         assert_eq!(results.product, Some(12));
         assert_eq!(results.quotient, None);
-        assert_eq!(results.reverse_difference, Some(-1));
+        assert_eq!(results.reverse_difference.unwrap().get_result(), -1);
         assert_eq!(results.reverse_quotient, None);
     }
 

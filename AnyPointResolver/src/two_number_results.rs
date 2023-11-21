@@ -3,11 +3,11 @@ use std::rc::Rc;
 
 #[derive(Debug)]
 pub(crate) struct TwoNumberResults {
-    pub(crate) sum: Option<i32>,
-    pub(crate) difference: Option<i32>,
+    pub(crate) sum: Option<Operand>,
+    pub(crate) difference: Option<Operand>,
     pub(crate) product: Option<i32>,
     pub(crate) quotient: Option<i32>,
-    pub(crate) reverse_difference: Option<i32>,
+    pub(crate) reverse_difference: Option<Operand>,
     pub(crate) reverse_quotient: Option<i32>,
 }
 

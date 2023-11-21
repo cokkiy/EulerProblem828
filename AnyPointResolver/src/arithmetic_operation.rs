@@ -2,12 +2,13 @@ use super::operand::Operand;
 use std;
 use std::{fmt::Display, rc::Rc};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) enum ArithmeticOperation {
     Addition(Rc<Operand>, Rc<Operand>, i32),
     Subtraction(Rc<Operand>, Rc<Operand>, i32),
     Multiplication(Rc<Operand>, Rc<Operand>, i32),
     Division(Rc<Operand>, Rc<Operand>, i32),
+    Modulo(Rc<Operand>, Rc<Operand>, i32),
 }
 
 impl ArithmeticOperation {

@@ -1,4 +1,5 @@
 use std;
+use std::rc::Rc;
 use std::{
     fmt::Display,
     ops::{Add, Div, Mul, Rem, Sub},
@@ -6,125 +7,123 @@ use std::{
 
 use super::arithmetic_operation::ArithmeticOperation;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) enum Operand {
     Number(i32),
     Operation(Box<ArithmeticOperation>),
 }
 
 impl Operand {
+    /// Converts the operand to an arithmetic expression.
+    ///
+    /// # Returns
+    ///
+    /// A string representation of the expression.
     pub fn to_expression(&self) -> String {
         match self {
             Operand::Number(number) => number.to_string(),
             Operand::Operation(operation) => operation.to_expression(),
         }
     }
+
+    /// Retrieves the result of the operand.
+    ///
+    /// # Returns
+    ///
+    /// The result of the operand as an `i32`.
+    ///
+    /// # Remarks
+    ///
+    /// Returns the result of this [`Operand`].
+    /// If [`Operand`] is [`Operand::Number`] returns the number,
+    /// else return the [Operand::Operation]'s result.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use AnyPointResolver::operand::Operand;
+    ///
+    /// let operand = Operand::new(5);
+    /// let result = operand.get_result();
+    /// assert_eq!(result, 5);
+    /// ```
+    pub fn get_result(&self) -> i32 {
+        match self {
+            Operand::Number(number) => *number,
+            Operand::Operation(operation) => operation.get_result(),
+        }
+    }
 }
 
 impl Add for &Operand {
-    type Output = i32;
+    type Output = Operand;
 
     fn add(self, rhs: Self) -> Self::Output {
-        match (self, rhs) {
-            (Operand::Number(left), Operand::Number(right)) => left + right,
-            (Operand::Number(left), Operand::Operation(operation)) => operation.get_result() + left,
-            (Operand::Operation(operation), Operand::Number(right)) => {
-                operation.get_result() + right
-            }
-            (Operand::Operation(left), Operand::Operation(right)) => {
-                left.get_result() + right.get_result()
-            }
-        }
+        Operand::Operation(Box::new(ArithmeticOperation::Addition(
+            Rc::new(self.clone()),
+            Rc::new(rhs.clone()),
+            self.get_result() + rhs.get_result(),
+        )))
     }
 }
 
 impl Sub for &Operand {
-    type Output = i32;
+    type Output = Operand;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        match (self, rhs) {
-            (Operand::Number(left), Operand::Number(right)) => left - right,
-            (Operand::Number(left), Operand::Operation(operation)) => left - operation.get_result(),
-            (Operand::Operation(operation), Operand::Number(right)) => {
-                operation.get_result() - right
-            }
-            (Operand::Operation(left), Operand::Operation(right)) => {
-                left.get_result() - right.get_result()
-            }
-        }
+        Operand::Operation(Box::new(ArithmeticOperation::Subtraction(
+            Rc::new(self.clone()),
+            Rc::new(rhs.clone()),
+            self.get_result() - rhs.get_result(),
+        )))
     }
 }
 
 impl Mul for &Operand {
-    type Output = i32;
+    type Output = Operand;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        match (self, rhs) {
-            (Operand::Number(left), Operand::Number(right)) => left * right,
-            (Operand::Number(left), Operand::Operation(operation)) => left * operation.get_result(),
-            (Operand::Operation(operation), Operand::Number(right)) => {
-                operation.get_result() * right
-            }
-            (Operand::Operation(left), Operand::Operation(right)) => {
-                left.get_result() * right.get_result()
-            }
-        }
+        Operand::Operation(Box::new(ArithmeticOperation::Multiplication(
+            Rc::new(self.clone()),
+            Rc::new(rhs.clone()),
+            self.get_result() * rhs.get_result(),
+        )))
     }
 }
 
 impl Div for &Operand {
-    type Output = i32;
+    type Output = Operand;
 
     fn div(self, rhs: Self) -> Self::Output {
-        match (self, rhs) {
-            (Operand::Number(left), Operand::Number(right)) => left / right,
-            (Operand::Number(left), Operand::Operation(operation)) => left / operation.get_result(),
-            (Operand::Operation(operation), Operand::Number(right)) => {
-                operation.get_result() / right
-            }
-            (Operand::Operation(left), Operand::Operation(right)) => {
-                left.get_result() / right.get_result()
-            }
-        }
+        Operand::Operation(Box::new(ArithmeticOperation::Division(
+            Rc::new(self.clone()),
+            Rc::new(rhs.clone()),
+            self.get_result() / rhs.get_result(),
+        )))
     }
 }
 
 impl Rem for &Operand {
-    type Output = i32;
+    type Output = Operand;
 
     fn rem(self, rhs: Self) -> Self::Output {
-        match (self, rhs) {
-            (Operand::Number(left), Operand::Number(right)) => left % right,
-            (Operand::Number(left), Operand::Operation(operation)) => left % operation.get_result(),
-            (Operand::Operation(operation), Operand::Number(right)) => {
-                operation.get_result() % right
-            }
-            (Operand::Operation(left), Operand::Operation(right)) => {
-                left.get_result() % right.get_result()
-            }
-        }
+        Operand::Operation(Box::new(ArithmeticOperation::Modulo(
+            Rc::new(self.clone()),
+            Rc::new(rhs.clone()),
+            self.get_result() % rhs.get_result(),
+        )))
     }
 }
 
 impl PartialEq for Operand {
     fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Number(left), Self::Number(right)) => left == right,
-            (Self::Number(left), Self::Operation(operation)) => *left == operation.get_result(),
-            (Self::Operation(operation), Self::Number(right)) => operation.get_result() == *right,
-            (Self::Operation(left), Self::Operation(right)) => {
-                left.get_result() == right.get_result()
-            }
-        }
+        self.get_result() == other.get_result()
     }
 }
 
 impl PartialEq<i32> for Operand {
     fn eq(&self, other: &i32) -> bool {
-        match self {
-            Self::Number(number) => number == other,
-            Self::Operation(operation) => operation.get_result() == *other,
-        }
+        self.get_result() == *other
     }
 }
 

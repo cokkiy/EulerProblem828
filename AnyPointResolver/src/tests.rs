@@ -29,11 +29,38 @@ mod tests {
     }
 
     #[test]
+    fn division_after_division() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() / (&mid / &right);
+        assert_eq!(format!("{}", result), "8 / (4 / 2) = 4")
+    }
+
+    #[test]
+    fn mul_after_division() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() / (&mid * &right);
+        assert_eq!(format!("{}", result), "8 / 4 * 2 = 1")
+    }
+
+    #[test]
     fn operand_sub() {
         let left = Operand::Number(2);
         let right = Operand::Number(4);
         let result = &left - &right;
         assert_eq!(format!("{}", result), "2 - 4 = -2");
+    }
+
+    #[test]
+    fn operand_direct_sub() {
+        let left = Operand::Number(2);
+        let right = Operand::Number(4);
+        let result = &left - &right - left.clone();
+        assert_eq!(format!("{}", result), "2 - 4 - 2 = -4");
+        assert_eq!(left, 2);
     }
 
     #[test]
@@ -58,6 +85,16 @@ mod tests {
         )));
         let result = &left - &right;
         assert_eq!(format!("{}", result), "2 - (1 + 2) = -1");
+    }
+
+    #[test]
+    fn multi_step_operation() {
+        let n1 = Operand::Number(1);
+        let n2 = Operand::Number(2);
+        let n3 = Operand::Number(3);
+        let n4 = Operand::Number(4);
+        let result = &(&n4 * &n3) - &(&n2 + &n1);
+        assert_eq!(format!("{}", result), "4 * 3 - (2 + 1) = 9");
     }
 
     #[test]

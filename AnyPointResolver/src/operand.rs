@@ -67,6 +67,14 @@ impl Add for &Operand {
     }
 }
 
+impl Add for Operand {
+    type Output = Operand;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        &self + &rhs
+    }
+}
+
 impl Sub for &Operand {
     type Output = Operand;
 
@@ -76,6 +84,14 @@ impl Sub for &Operand {
             Rc::new(rhs.clone()),
             self.get_result() - rhs.get_result(),
         )))
+    }
+}
+
+impl Sub for Operand {
+    type Output = Operand;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        &self - &rhs
     }
 }
 
@@ -91,6 +107,14 @@ impl Mul for &Operand {
     }
 }
 
+impl Mul for Operand {
+    type Output = Operand;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        &self * &rhs
+    }
+}
+
 impl Div for &Operand {
     type Output = Operand;
 
@@ -103,6 +127,14 @@ impl Div for &Operand {
     }
 }
 
+impl Div for Operand {
+    type Output = Operand;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        &self / &rhs
+    }
+}
+
 impl Rem for &Operand {
     type Output = Operand;
 
@@ -112,6 +144,14 @@ impl Rem for &Operand {
             Rc::new(rhs.clone()),
             self.get_result() % rhs.get_result(),
         )))
+    }
+}
+
+impl Rem for Operand {
+    type Output = Operand;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        &self % &rhs
     }
 }
 

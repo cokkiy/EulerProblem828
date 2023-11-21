@@ -5,10 +5,10 @@ use std::rc::Rc;
 pub(crate) struct TwoNumberResults {
     pub(crate) sum: Option<Operand>,
     pub(crate) difference: Option<Operand>,
-    pub(crate) product: Option<i32>,
-    pub(crate) quotient: Option<i32>,
+    pub(crate) product: Option<Operand>,
+    pub(crate) quotient: Option<Operand>,
     pub(crate) reverse_difference: Option<Operand>,
-    pub(crate) reverse_quotient: Option<i32>,
+    pub(crate) reverse_quotient: Option<Operand>,
 }
 
 impl TwoNumberResults {

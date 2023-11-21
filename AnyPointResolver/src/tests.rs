@@ -207,10 +207,10 @@ mod tests {
         let results = TwoNumberResults::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(3)));
         assert_eq!(results.difference.unwrap().get_result(), -1);
-        assert_eq!(results.product, Some(2));
+        assert_eq!(results.product.unwrap(), 2);
         assert_eq!(results.quotient, None);
         assert_eq!(results.reverse_difference.unwrap().get_result(), 1);
-        assert_eq!(results.reverse_quotient, Some(2));
+        assert_eq!(results.reverse_quotient.unwrap(), 2);
     }
 
     #[test]
@@ -231,7 +231,7 @@ mod tests {
         let results = TwoNumberResults::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(11)));
         assert_eq!(results.difference.unwrap().get_result(), -5);
-        assert_eq!(results.product, Some(24));
+        assert_eq!(results.product.unwrap(), 24);
         assert_eq!(results.quotient, None);
         assert_eq!(results.reverse_difference.unwrap().get_result(), 5);
         assert_eq!(results.reverse_quotient, None);
@@ -251,8 +251,8 @@ mod tests {
         let results = TwoNumberResults::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(24)));
         assert_eq!(results.difference.unwrap().get_result(), 8);
-        assert_eq!(results.product, Some(128));
-        assert_eq!(results.quotient, Some(2));
+        assert_eq!(results.product.unwrap(), 128);
+        assert_eq!(results.quotient.unwrap(), 2);
         assert_eq!(results.reverse_difference.unwrap().get_result(), -8);
         assert_eq!(results.reverse_quotient, None);
     }
@@ -269,7 +269,7 @@ mod tests {
         let results = TwoNumberResults::new(left.clone(), right.clone());
         assert_eq!(results.sum.unwrap().get_result(), 7);
         assert_eq!(results.difference.unwrap().get_result(), 1);
-        assert_eq!(results.product, Some(12));
+        assert_eq!(results.product.unwrap(), 12);
         assert_eq!(results.quotient, None);
         assert_eq!(results.reverse_difference.unwrap().get_result(), -1);
         assert_eq!(results.reverse_quotient, None);

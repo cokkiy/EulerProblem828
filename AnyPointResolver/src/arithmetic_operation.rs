@@ -17,7 +17,8 @@ impl ArithmeticOperation {
             Self::Addition(left, right, result)
             | Self::Subtraction(left, right, result)
             | Self::Multiplication(left, right, result)
-            | Self::Division(left, right, result) => (left.clone(), right.clone(), *result),
+            | Self::Division(left, right, result)
+            | Self::Modulo(left, right, result) => (left.clone(), right.clone(), *result),
         }
     }
 
@@ -54,6 +55,11 @@ impl ArithmeticOperation {
                 let l_operation_str = format_operand_expression(left);
                 let r_operation_str = format_operand_expression(right);
                 format!("{} / {}", l_operation_str, r_operation_str)
+            }
+            Self::Modulo(left, right, _) => {
+                let l_operation_str = format_operand_expression(left);
+                let r_operation_str = format_operand_expression(right);
+                format!("{} % {}", l_operation_str, r_operation_str)
             }
         }
     }
@@ -142,6 +148,12 @@ impl Display for ArithmeticOperation {
                 let l_operation_str = format_operand(left);
                 let r_operation_str = format_operand(right);
                 write!(f, "{} / {} = {}", l_operation_str, r_operation_str, result)
+            }
+
+            Self::Modulo(left, right, result) => {
+                let l_operation_str = format_operand(left);
+                let r_operation_str = format_operand(right);
+                write!(f, "{} % {} = {}", l_operation_str, r_operation_str, result)
             }
         }
     }

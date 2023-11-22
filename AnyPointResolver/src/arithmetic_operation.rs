@@ -71,38 +71,6 @@ impl ArithmeticOperation {
     pub(crate) fn get_result(&self) -> i32 {
         self.to_tuple().2
     }
-
-    /// Returns `true` if the arithmetic operation is [`Addition`].
-    ///
-    /// [`Addition`]: ArithmeticOperation::Addition
-    #[must_use]
-    pub(crate) fn is_addition(&self) -> bool {
-        matches!(self, Self::Addition(..))
-    }
-
-    /// Returns `true` if the arithmetic operation is [`Subtraction`].
-    ///
-    /// [`Subtraction`]: ArithmeticOperation::Subtraction
-    #[must_use]
-    pub(crate) fn is_subtraction(&self) -> bool {
-        matches!(self, Self::Subtraction(..))
-    }
-
-    /// Returns `true` if the arithmetic operation is [`Multiplication`].
-    ///
-    /// [`Multiplication`]: ArithmeticOperation::Multiplication
-    #[must_use]
-    pub(crate) fn is_multiplication(&self) -> bool {
-        matches!(self, Self::Multiplication(..))
-    }
-
-    /// Returns `true` if the arithmetic operation is [`Division`].
-    ///
-    /// [`Division`]: ArithmeticOperation::Division
-    #[must_use]
-    pub(crate) fn is_division(&self) -> bool {
-        matches!(self, Self::Division(..))
-    }
 }
 
 impl Display for ArithmeticOperation {

@@ -3,7 +3,9 @@ mod tests {
 
     use std::rc::Rc;
 
-    use crate::{arithmetic_operation::ArithmeticOperation, operand::Operand, results::Results};
+    use crate::{
+        arithmetic_operation::ArithmeticOperation, operand::Operand, resolve, results::Results,
+    };
 
     #[test]
     fn operand_add() {
@@ -415,5 +417,39 @@ mod tests {
         let right = Operand::Number(2);
         let result = &left / &right;
         assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn remain_numbers_test() {
+        let numbers = vec![
+            Rc::new(Operand::Number(1)),
+            Rc::new(Operand::Number(2)),
+            Rc::new(Operand::Number(3)),
+            Rc::new(Operand::Number(4)),
+            Rc::new(Operand::Number(5)),
+        ];
+        let i = 0;
+        let pos = 1;
+        let remain_numbers: Vec<Rc<Operand>> = numbers
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| *index != i && *index != (i + 1 + pos))
+            .map(|(_, number)| number.clone())
+            .collect();
+        assert_eq!(remain_numbers.len(), 3);
+        assert_eq!(remain_numbers[0], Rc::new(Operand::Number(2)));
+        assert_eq!(remain_numbers[1], Rc::new(Operand::Number(4)));
+    }
+
+    #[test]
+    fn fork_calculation_test() {
+        let mut results_steps = Vec::new();
+        resolve(
+            3,
+            &vec![Rc::new(Operand::Number(1)), Rc::new(Operand::Number(2))],
+            &mut results_steps,
+        );
+        assert_eq!(results_steps.len(), 1);
+        assert_eq!(format!("{}", results_steps[0]), "1 + 2 = 3");
     }
 }

@@ -1,6 +1,6 @@
 {
   "rust-analyzer.linkedProjects": [
-    "./Cargo.toml",
+    "./console_app/Cargo.toml",
     "./AnyPointResolver/Cargo.toml"
   ]
 }

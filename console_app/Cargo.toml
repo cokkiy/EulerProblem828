@@ -1,5 +1,5 @@
 [package]
-name = "euler_problem_828"
+name = "any_point_resolver"
 version = "0.1.0"
 edition = "2021"
 

@@ -3,7 +3,7 @@ use std;
 use std::{fmt::Display, rc::Rc};
 
 #[derive(Clone, Debug)]
-pub(crate) enum ArithmeticOperation {
+pub enum ArithmeticOperation {
     Addition(Rc<Operand>, Rc<Operand>, i32),
     Subtraction(Rc<Operand>, Rc<Operand>, i32),
     Multiplication(Rc<Operand>, Rc<Operand>, i32),

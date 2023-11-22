@@ -1,8 +1,9 @@
 pub mod arithmetic_operation;
 pub mod operand;
+pub mod resolver;
 pub mod results;
 mod tests;
 
-use arithmetic_operation::ArithmeticOperation;
-use operand::Operand;
-use results::Results;
+pub use arithmetic_operation::ArithmeticOperation;
+pub use operand::Operand;
+pub use resolver::fork_calculation as resolve;

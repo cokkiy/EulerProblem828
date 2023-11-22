@@ -8,7 +8,7 @@ use std::{
 use super::arithmetic_operation::ArithmeticOperation;
 
 #[derive(Clone, Debug)]
-pub(crate) enum Operand {
+pub enum Operand {
     Number(i32),
     Operation(Box<ArithmeticOperation>),
 }
@@ -41,9 +41,9 @@ impl Operand {
     /// # Example
     ///
     /// ```
-    /// use AnyPointResolver::operand::Operand;
+    /// use apr::Operand;
     ///
-    /// let operand = Operand::new(5);
+    /// let operand = Operand::Number(5);
     /// let result = operand.get_result();
     /// assert_eq!(result, 5);
     /// ```
@@ -164,6 +164,12 @@ impl PartialEq for Operand {
 impl PartialEq<i32> for Operand {
     fn eq(&self, other: &i32) -> bool {
         self.get_result() == *other
+    }
+}
+
+impl PartialEq<Operand> for i32 {
+    fn eq(&self, other: &Operand) -> bool {
+        *self == other.get_result()
     }
 }
 

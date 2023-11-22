@@ -2,7 +2,7 @@ use super::operand::Operand;
 use std::rc::Rc;
 
 #[derive(Debug)]
-pub(crate) struct TwoNumberResults {
+pub(crate) struct Results {
     pub(crate) sum: Option<Operand>,
     pub(crate) difference: Option<Operand>,
     pub(crate) product: Option<Operand>,
@@ -11,9 +11,9 @@ pub(crate) struct TwoNumberResults {
     pub(crate) reverse_quotient: Option<Operand>,
 }
 
-impl TwoNumberResults {
-    pub(crate) fn new(left: Rc<Operand>, right: Rc<Operand>) -> TwoNumberResults {
-        TwoNumberResults {
+impl Results {
+    pub(crate) fn new(left: Rc<Operand>, right: Rc<Operand>) -> Results {
+        Results {
             sum: Some(left.as_ref() + right.as_ref()),
             difference: Some(left.as_ref() - right.as_ref()),
             product: Some(left.as_ref() * right.as_ref()),

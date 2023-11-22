@@ -3,10 +3,7 @@ mod tests {
 
     use std::rc::Rc;
 
-    use crate::{
-        arithmetic_operation::ArithmeticOperation, operand::Operand,
-        two_number_results::TwoNumberResults,
-    };
+    use crate::{arithmetic_operation::ArithmeticOperation, operand::Operand, results::Results};
 
     #[test]
     fn operand_add() {
@@ -38,12 +35,48 @@ mod tests {
     }
 
     #[test]
+    fn division_after_mul() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() * (&mid / &right);
+        assert_eq!(format!("{}", result), "8 * 4 / 2 = 16")
+    }
+
+    #[test]
     fn mul_after_division() {
         let left = Operand::Number(8);
         let mid = Operand::Number(4);
         let right = Operand::Number(2);
         let result = left.clone() / (&mid * &right);
         assert_eq!(format!("{}", result), "8 / 4 * 2 = 1")
+    }
+
+    #[test]
+    fn mul_after_addition() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() + (&mid * &right);
+        assert_eq!(format!("{}", result), "8 + 4 * 2 = 16")
+    }
+
+    #[test]
+    fn add_after_mul() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() * (&mid + &right);
+        assert_eq!(format!("{}", result), "8 * (4 + 2) = 48")
+    }
+
+    #[test]
+    fn add_after_div() {
+        let left = Operand::Number(8);
+        let mid = Operand::Number(4);
+        let right = Operand::Number(2);
+        let result = left.clone() / (&mid + &right);
+        assert_eq!(format!("{}", result), "8 / (4 + 2) = 1")
     }
 
     #[test]
@@ -241,7 +274,7 @@ mod tests {
     fn two_number_results() {
         let left = Rc::new(Operand::Number(1));
         let right = Rc::new(Operand::Number(2));
-        let results = TwoNumberResults::new(left.clone(), right.clone());
+        let results = Results::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(3)));
         assert_eq!(results.difference.unwrap().get_result(), -1);
         assert_eq!(results.product.unwrap(), 2);
@@ -265,7 +298,7 @@ mod tests {
                 8,
             ),
         )));
-        let results = TwoNumberResults::new(left.clone(), right.clone());
+        let results = Results::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(11)));
         assert_eq!(results.difference.unwrap().get_result(), -5);
         assert_eq!(results.product.unwrap(), 24);
@@ -285,7 +318,7 @@ mod tests {
                 8,
             ),
         )));
-        let results = TwoNumberResults::new(left.clone(), right.clone());
+        let results = Results::new(left.clone(), right.clone());
         assert_eq!(results.sum, Some(Operand::Number(24)));
         assert_eq!(results.difference.unwrap().get_result(), 8);
         assert_eq!(results.product.unwrap(), 128);
@@ -303,7 +336,7 @@ mod tests {
         ))));
 
         let right = Rc::new(Operand::Number(3));
-        let results = TwoNumberResults::new(left.clone(), right.clone());
+        let results = Results::new(left.clone(), right.clone());
         assert_eq!(results.sum.unwrap().get_result(), 7);
         assert_eq!(results.difference.unwrap().get_result(), 1);
         assert_eq!(results.product.unwrap(), 12);
